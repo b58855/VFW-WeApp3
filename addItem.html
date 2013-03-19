@@ -15,25 +15,20 @@
 	<body>
     	<h1>Game Development:<br>To Do List</h1>
     	<h2>Add Task</h2>
-        <form action="" method="post" id="entryForm">
-        	<fieldset><legend>Create New Task</legend>
+        <form action="#" method="post" id="entryForm">
+        	<fieldset>
+            	<legend>Create New Task</legend>
+                <ol id="error"></ol>
                 <!--select the type of task to be done-->
-                <p id="select"><label for="category">Category:</label>
-                    <!--<select name="category" id="category" class="data">                	
-                        <option value="programming">Programming</option>
-                        <option value="art">Art</option>
-                        <option value="sound">Sound</option>
-                        <option value="design">Design</option>
-                        <option value="ui">UI</option>
-                    </select>--> </p>
+                <p id="select"><label for="category">Category:</label></p>
                 <!--what is the task?-->
                 <p><label for="task">Task:</label><input name="task" type="text" id="task" class="data"> </p>
                 <label for="task">Importance:</label>
                 <ul>
                 <!--tells us how important the task is-->
-                     <li><label for="mostImportant"> Most Important:</label><input name="importance" type="radio" value="mostImportant" id="mostImportant" class="data"></li>
-                    <li><label for="important">Important:</label><input name="importance" type="radio" value="important" id="important" class="data"></li>
-                    <li><label for="leastMmportant">Least Important:</label><input name="importance" type="radio" value="leastImportant" id="leastImportant"></li>
+                     <li class="import"><label for="mostImportant">Most Importance:</label><input name="importance" type="radio" value="Very" id="mostImportant" class="data"></li>
+                    <li class="import"><label for="important">Some Importance:</label><input name="importance" type="radio" value="Some" id="important" class="data"></li>
+                    <li class="import"><label for="leastMmportant">Little Importance:</label><input name="importance" type="radio" value="Little" id="leastImportant"></li>
                 </ul>
                  <!--when does the task have to start by   --> 
                 <p><label for="startDate">Start Date:</label><input name="date" type="date" id="startDate"> </p>
@@ -43,7 +38,7 @@
                 <p><label for="hours">Hours of Work:</label><input name="hours" type="range" id="hours"></p>
                  <!--long form description of the task-->
                 <p><label for="description">Description:</label><textarea name="description" cols="39" rows="5" id="description"></textarea></p>
-                <input name="submit" value="submit" type="button" id="submit"> 
+                <input name="submit" value="save" type="button" id="submit"> 
             </fieldset> 
         </form>
         <input name="Hidden" type="hidden" value="True">

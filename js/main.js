@@ -16,6 +16,7 @@ window.addEventListener("DOMContentLoaded", function(){
 	var displayData = $('displayData');
 	var categorySelect = ['Programming', 'Art', 'Sound', 'Design', 'UI'];
 	
+	//creates a selection form
 	function createSelection()
 	{
 		var formTag = document.getElementsByTagName('form');
@@ -77,13 +78,19 @@ window.addEventListener("DOMContentLoaded", function(){
 	}
 	
 	//saves the data to the local storage
-	function saveToLocal()
+	function saveToLocal(oldKey)
 	{
-		//creates key value for local storage
-		var key = Math.floor(Math.random() * 10000000000);
-		getImportanceRadio();
-		
+		if(!oldKey)
+		{
+			//creates key value for local storage
+			var key = Math.floor(Math.random() * 10000000000);
+		}
+		else
+		{
+			key = oldKey;
+		}
 		//gets form values, stores them in an object
+		getImportanceRadio();	
 		var data = {};
 		data.category = ['Category', $('category').value];
 		data.task = ['Task', $('task').value];
@@ -95,7 +102,8 @@ window.addEventListener("DOMContentLoaded", function(){
 		
 		//saves to local storage, converts object to string
 		localStorage.setItem(key, JSON.stringify(data));
-		alert('Submitted');
+		alert('Saved');
+		window.location.reload();
 	}
 	
 	//gets data from local storage, and displays it on the screen
@@ -118,23 +126,140 @@ window.addEventListener("DOMContentLoaded", function(){
 		for(var i = 0; i < localStorage.length; i++)
 		{
 			var addItem = document.createElement('li');
+			var editDeleteLi = document.createElement('li');
 			addList.appendChild(addItem);
 			var key = localStorage.key(i);
 			var value = localStorage.getItem(key);
 			//converts local storage string back into original object
 			var object = JSON.parse(value);
 			var addSubList = document.createElement('ol');
+			addSubList.className = 'listItem';
 			addItem.appendChild(addSubList);
 			for(var j in object)
 			{
 				var addSubItem = document.createElement('li');
 				addSubList.appendChild(addSubItem);
-				var text = object[j][0]+" "+object[j][1];
+				var text = object[j][0]+": "+object[j][1];
 				addSubItem.innerHTML = text;
+				addSubItem.className = "subItem";			
 			}
+			addSubList.appendChild(editDeleteLi);
+			createEditDelete(localStorage.key(i), editDeleteLi);
 		}
 	}
 	
+	//creates the edit and delete options for each list item
+	function createEditDelete(key, linksLI)
+	{		
+		var linkTexts = ['Edit', 'Delete'];
+		var linkIDs = ['edit', 'delete'];
+		var linkFunctions = [editItem, deleteItem];
+		for(var i = 0; i < 2; i++)
+		{
+			var link = document.createElement('a');
+			link.href = '#';
+			link.id = linkIDs[i];
+			link.key = key;
+			link.addEventListener('click', linkFunctions[i]);
+			link.innerHTML = linkTexts[i];
+			linksLI.appendChild(link);
+		}
+	}
+	
+	//edits the item needs a name change
+	function editItem(key)
+	{
+		var items = localStorage.getItem(this.key);
+		var data = JSON.parse(items);
+		
+		//shows form
+		toggleDisplay('off');
+		
+		//enter current local storage values in form
+		$('category').value = data.category[1];
+		$('task').value = data.task[1];
+		var radios = document.forms[0].importance;
+		for(var i = 0; i < radios.length; i++)
+		{
+			if(radios[i].value == "Very" && data.importance[1] == "mostImportant")
+			{
+				radios[i].setAttribute("checked", "checked");
+			}
+			if(radios[i].value == "Some" && data.importance[1] == "important")
+			{
+				radios[i].setAttribute("checked", "checked");
+			}
+			if(radios[i].value == "Little" && data.importance[1] == "leastImportant")
+			{
+				radios[i].setAttribute("checked", "checked");
+			}
+		}
+		$('startDate').value = data.startDate[1];
+		$('endDate').value = data.endDate[1];
+		$('hours').value = data.HoursOfWork[1];
+		$('description').value = data.Description[1];
+		
+		//remove save button
+		saveData.removeEventListener('click', validate);
+		//change submit button to edit button
+		$('submit').value = "edit";
+		var editSave = $('submit');
+		editSave.addEventListener('click', validate);
+		editSave.key = this.key;
+	}
+	
+	//deletes an item needs a name change
+	function deleteItem()
+	{
+		var confirmDelete = confirm("Delete item?");
+		if(confirmDelete)
+		{
+			localStorage.removeItem(this.key);
+			window.location.reload();
+		}
+	}
+	
+	//validates the form to make sure everything is filled out that needs to be
+	function validate(eventData)
+	{
+		var getTask = $('task');
+		var getDescription = $('description');
+		var getError = $('error');
+		
+		getError.innerHTML = '';
+		getTask.style.border = '1px solid black';
+		
+		var errors = [];
+		if(getTask.value === '')
+		{
+			var error = "Please enter a task.";
+			getTask.style.border = '1px solid red';
+			errors.push(error);
+		}
+		if(getDescription.value === '')
+		{
+			var error = "Please enter a description.";
+			getDescription.style.border = '1px solid red';
+			errors.push(error);
+		}
+		if(errors.length >= 1)
+		{
+			for(var i = 0; i < errors.length; i++)
+			{
+				var text = document.createElement('li');
+				text.innerHTML = errors[i];
+				getError.appendChild(text);
+			}
+			eventData.preventDefault();
+			return false;
+		}
+		else
+		{
+			saveToLocal(this.key);
+		}
+	}
+	
+	//clears all locally stored data
 	function removeLocalData()
 	{
 		if(localStorage.length === 0)
@@ -152,5 +277,5 @@ window.addEventListener("DOMContentLoaded", function(){
 	
 	displayData.addEventListener('click', getLocalData);	
 	clearData.addEventListener('click', removeLocalData);
-	saveData.addEventListener('click', saveToLocal);
+	saveData.addEventListener('click', validate);
 });
